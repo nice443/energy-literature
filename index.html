@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI + 能源系统建模 | 前沿文献每日追踪知识库</title>
+  <!-- 引入 Tailwind CSS 实现现代化美观界面 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 自定义滚动条与细节美化 */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .nav-item.active {
+      background-color: #eef2ff;
+      color: #4f46e5;
+      border-right: 3px solid #4f46e5;
+      font-weight: 600;
+    }
+    .card-hover {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -8px rgba(79, 70, 229, 0.12), 0 4px 8px -4px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- 顶部通栏 (移动端导航触发器) -->
+  <header class="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <span class="text-xl">⚡</span>
+      <h1 class="font-bold text-slate-900 text-base">AI + 能源系统建模文献库</h1>
+    </div>
+    <button onclick="toggleMobileSidebar()" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm font-medium">
+      📑 目录导航
+    </button>
+  </header>
+
+  <div class="max-w-[1440px] mx-auto flex min-h-screen">
+
+    <!-- 左侧固定导航栏 (Sidebar) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static lg:h-screen lg:sticky lg:top-0 transition-transform duration-300 ease-in-out">
+      <!-- 知识库标题区 -->
+      <div class="p-6 border-b border-slate-100 bg-gradient-to-br from-slate-900 via-brand-900 to-slate-900 text-white">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 text-xs font-semibold bg-brand-500/30 border border-brand-400/40 rounded-full text-brand-100">
+            2024 - 2026 顶刊追踪
+          </span>
+          <span id="total-badge" class="text-xs text-slate-300 font-mono">共 9 篇</span>
+        </div>
+        <h1 class="mt-3 text-xl font-bold tracking-tight flex items-center gap-2">
+          <span>⚡</span> AI + 能源系统建模
+        </h1>
+        <p class="mt-1 text-xs text-slate-300 leading-relaxed">
+          每日精选前沿文献：核心总结、研究方法与科研选题启发全景知识库
+        </p>
+      </div>
+
+      <!-- 搜索框与快速筛选 -->
+      <div class="p-4 border-b border-slate-100 bg-slate-50/50 space-y-2.5">
+        <div class="relative">
+          <input type="text" id="search-input" oninput="filterPapers()" placeholder="搜索关键词 (如: GNN, 强化学习, 代理)..." 
+            class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+          <span>点击下方条目快速跳转</span>
+          <button onclick="openModal()" class="text-brand-600 hover:text-brand-700 font-medium flex items-center gap-0.5">
+            <span>➕</span> 如何追加新期？
+          </button>
+        </div>
+      </div>
+
+      <!-- 期数跳转列表 -->
+      <nav id="nav-list" class="flex-1 overflow-y-auto py-2 divide-y divide-slate-50">
+        <!-- 由 JS 动态渲染生成 -->
+      </nav>
+
+      <!-- 底部统计与说明 -->
+      <div class="p-3.5 border-t border-slate-100 bg-slate-50 text-center text-xs text-slate-400">
+        持续更新中 · 支持本地永久保存与扩展
+      </div>
+    </aside>
+
+    <!-- 移动端遮罩层 -->
+    <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/40 z-30 hidden lg:hidden"></div>
+
+    <!-- 右侧主内容区 (Main Content) -->
+    <main class="flex-1 min-w-0 px-4 py-6 sm:px-8 lg:px-12 lg:py-10">
+      
+      <!-- 顶部概览横幅 -->
+      <div class="mb-8 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">📚 研究方向全景导览</h2>
+          <p class="text-sm text-slate-600 mt-1">
+            目前已覆盖：<span class="font-medium text-slate-800">全景综述、机器学习代理模型、LLM自动化建模、安全深度强化学习、物理信息GNN、扩散模型场景生成、神经算子(DeepONet/FNO)、联邦边缘学习、零/少样本迁移学习</span>。
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 shrink-0">
+          <button onclick="openModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <span>✨</span> 以后每期如何往里加？
+          </button>
+        </div>
+      </div>
+
+      <!-- 文献卡片容器 -->
+      <div id="papers-container" class="space-y-10">
+        <!-- 由 JS 动态渲染生成 -->
+      </div>
+
+      <!-- 底部返回顶部 -->
+      <div class="mt-12 mb-6 text-center">
+        <a href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-sm font-medium text-slate-600 hover:text-brand-600 hover:border-brand-300 shadow-sm transition">
+          <span>⬆️</span> 回到顶部
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- 弹窗：如何添加后续每期文献 (含代码生成器) -->
+  <div id="help-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <span>🚀</span> 以后每期如何往这个 HTML 里追加？
+        </h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <div class="mt-4 space-y-4 text-sm text-slate-600 leading-relaxed">
+        <p class="bg-brand-50 text-brand-900 p-3.5 rounded-xl border border-brand-100 font-medium">
+          💡 <strong>最省心的方法（推荐）：</strong><br>
+          以后每天我给您推送完新一期文献后，您只需要对我说一句：<br>
+          <span class="inline-block mt-1 px-2 py-0.5 bg-white rounded border border-brand-200 text-brand-700 font-mono text-xs">“把今天这篇生成一段 JSON 代码，我要加到 HTML 里”</span> 或 <span class="inline-block mt-1 px-2 py-0.5 bg-white rounded border border-brand-200 text-brand-700 font-mono text-xs">“直接给我更新后的完整 HTML”</span>，我就会立刻为您生成好！
+        </p>
+        <p><strong>手动追加步骤（只需 10 秒）：</strong></p>
+        <ol class="list-decimal list-inside space-y-2 text-slate-700">
+          <li>用记事本或 VS Code 打开本 <code>.html</code> 文件，拉到最底部的 <code>const papersData = [ ... ]</code> 数组区域。</li>
+          <li>在数组末尾按格式粘贴新的一期对象（您可以找到注释 <code>// === 在此处上方粘贴新一期文献 ===</code> 的位置）。</li>
+          <li>保存文件并刷新浏览器，<strong>左侧目录导航、期数统计、搜索索引和正文卡片会自动全部更新！</strong></li>
+        </ol>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button onclick="closeModal()" class="px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 核心文献数据库：以后每期新增只需在下方 papersData 数组中追加一个对象即可 -->
+  <!-- ===================================================================== -->
+  <script>
+    const papersData = [
+      {
+        id: "issue-01",
+        issueLabel: "第 1 期 · 全景综述基石",
+        topicTag: "建模需求与工具选型",
+        tagColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        titleEn: "Overview of energy modeling requirements and tools for future smart energy systems",
+        titleZh: "未来智慧能源系统的建模需求与工具综述",
+        authors: "Hassan Majidi, Mohammad Mohsen Hayati, Christian Breyer, Behnam Mohammadi-Ivatloo 等",
+        journal: "Renewable and Sustainable Energy Reviews (Vol. 212, 115367)",
+        date: "2025年4月",
+        doi: "10.1016/j.rser.2025.115367",
+        extraNote: "",
+        coreSummary: [
+          "<strong>界定未来智慧能源系统的建模新需求</strong>：不仅限于电力系统，还需涵盖供热/制冷、交通、工业脱碳及氢能/电转X（Power-to-X）的<strong>多部门深度耦合（Sector Coupling）</strong>；同时需兼顾小时级运行模拟与数十年容量扩张规划的<strong>高时空分辨率与计算可解性平衡</strong>，并引入本地能源社区与多主体博弈行为（如 ABM）。",
+          "<strong>现有主流建模工具的横向对比</strong>：对当前主流开源及商业工具（如 PyPSA、OSeMOSYS、TIMES、Backbone、LUT 模型、EnergyPLAN 等）进行了全面的能力映射与优劣势对比，指出了现有工具在处理不确定性、非线性网络约束及社会经济耦合方面的局限性。"
+        ],
+        methods: [
+          "<strong>系统性文献综述与分类框架（Taxonomy）</strong>：建立涵盖时空精度、技术细致度、经济与市场机制、数学优化方法、开源程度等维度的标准化评价指标体系。",
+          "<strong>需求-能力匹配矩阵（Requirement-Capability Matching）</strong>：通过定性与定量结合的比较分析法，将未来智慧能源系统的核心特征与现存建模工具的功能模块逐一对齐，精准识别当前研究中的“建模空白（Modeling Gaps）”。"
+        ],
+        inspirations: [
+          "<strong>模型选型指南</strong>：若处于研究初期或工具选型阶段，可利用本文快速厘清不同建模框架（自上而下 vs. 自下而上、优化模型 vs. 仿真模型）的适用边界，避免走弯路。",
+          "<strong>引言动机（Research Gap）强力支撑</strong>：若致力于改进算法或开发新模型，文中总结的“未来建模需求与现有工具的差距”可直接作为论文 Introduction 中阐述研究动机的权威文献支撑。"
+        ]
+      },
+      {
+        id: "issue-02",
+        issueLabel: "第 2 期 · 专项加更",
+        topicTag: "AI 代理模型 & 物理信息机器学习",
+        tagColor: "bg-blue-50 text-blue-700 border-blue-200",
+        titleEn: "Machine learning as a surrogate model for EnergyPLAN: Speeding up energy system optimization at the country level",
+        titleZh: "将机器学习作为 EnergyPLAN 的代理模型：加速国家层面的能源系统优化",
+        authors: "Matteo Giacomo Prina, Mattia Dallapiccola, David Moser, Wolfram Sparber",
+        journal: "Energy (Vol. 307, 132735)",
+        date: "2024年10月 (含2025最新进展)",
+        doi: "10.1016/j.energy.2024.132735",
+        extraNote: "关联拓展：2025年底《Applied Energy》(Vol. 390 & 402) 最新综述《Physics-informed machine learning meets renewable energy systems》",
+        coreSummary: [
+          "<strong>AI 代理模型（Surrogate Model）替代复杂仿真</strong>：宏观能源系统规划往往需要成千上万次全年 8760 小时的高分辨率模拟，面临严重的“计算维数灾难”。作者训练机器学习代理模型，直接学习“决策变量（风光容量、储能规模、热泵渗透率）”到“系统输出指标（总成本、碳排放、弃风弃光率）”的非线性映射。",
+          "<strong>计算效率与精度的平衡</strong>：在国家级能源系统转型优化中引入代理模型后，<strong>整体优化计算时间大幅缩减了 64%</strong>，同时求得的帕累托前沿（Pareto Front）解集与直接运行物理模型高度吻合。",
+          "<strong>物理信息机器学习（PIML）延伸趋势</strong>：结合 2025《Applied Energy》最新进展，学界进一步引入<strong>物理信息神经网络（PINN/PIML）与主动学习采样（Active Learning）</strong>，在减少训练样本生成成本的同时，确保 AI 代理模型输出严格符合热力学与潮流能量守恒定律。"
+        ],
+        methods: [
+          "<strong>拉丁超立方采样（LHS）</strong>：在多维决策空间中高效生成具有代表性的能源系统配置样本，并调用底层物理模型（EnergyPLAN）生成标签数据集。",
+          "<strong>集成学习与深度神经网络对比</strong>：评估随机森林、梯度提升树（GBDT）、多层感知机（MLP）在高维多输出能源系统指标预测中的泛化能力。",
+          "<strong>代理辅助多目标进化算法（Surrogate-assisted MOEA）</strong>：将训练好的 AI 模型嵌入多目标优化循环中快速筛选非支配解，并在最后阶段结合真实物理模型进行校验修正。"
+        ],
+        inspirations: [
+          "<strong>加速跨时空耦合求解（Surrogate Modeling）</strong>：用深度学习或 GNN 作为传统大型优化模型（MILP/LP）或复杂仿真软件的代理模型，解决跨时空尺度耦合带来的算力瓶颈。",
+          "<strong>物理引导的机器学习（Physics-Informed ML）</strong>：在神经网络损失函数中嵌入潮流方程或热力学守恒定律，解决纯 AI 模型在极端气象或未知场景下“不可解释、物理越界”的痛点。"
+        ]
+      },
+      {
+        id: "issue-03",
+        issueLabel: "第 3 期 · 大模型与智能体",
+        topicTag: "大语言模型 (LLMs) & 自动化建模",
+        tagColor: "bg-purple-50 text-purple-700 border-purple-200",
+        titleEn: "Large Language Models Meet Energy Systems: Opportunities, Challenges, and Future Perspectives",
+        titleZh: "大语言模型遇上能源系统：机遇、挑战与未来展望",
+        authors: "Chaobo Zhang, Jian Zhang, Jie Lu, Yang Zhao",
+        journal: "Applied Energy (Vol. 403, Part A, 127076)",
+        date: "2026年1月",
+        doi: "10.1016/j.apenergy.2025.127076",
+        extraNote: "",
+        coreSummary: [
+          "<strong>自动化能源系统建模（Automated Energy Modeling）</strong>：利用 LLM 的自然语言理解与代码生成能力，将人类专家的自然语言描述（系统拓扑、设备容量、碳排约束）自动转化为优化求解器（Gurobi、Cplex）的数学规划代码，或自动生成 EnergyPlus / Modelica 的底层配置文件（如 EPlus-LLM 框架）。",
+          "<strong>基于时序基础模型的零样本/少样本预测</strong>：针对新建园区或极端天气下历史数据匮乏的痛点，利用预训练大模型（结合 Time-series Prompting 或微调技术）对风光出力、负荷及电价进行高精度跨场景泛化预测。",
+          "<strong>智能体驱动的数字孪生与人机协同决策（Agentic Digital Twins）</strong>：将 LLM 作为“大脑（AI Agent）”，向下调用物理优化模型与代理模型计算，向上将枯燥的帕累托前沿和潮流数据翻译为政策制定者能理解的多维情景叙事（Narrative Explanation）。"
+        ],
+        methods: [
+          "<strong>全生命周期映射框架</strong>：从“数据预处理 → 物理/数据混合建模 → 仿真与优化求解 → 结果解释与运维控制”四个阶段构建 LLM 嵌入能源系统的技术路线图。",
+          "<strong>提示词工程（Prompt Engineering）与思维链（CoT）</strong>：引导模型理解复杂的电热气耦合逻辑与物理约束。",
+          "<strong>检索增强生成（RAG）与参数高效微调（PEFT / LoRA）</strong>：通过外挂电网规程与设备手册抑制大模型工程参数“幻觉（Hallucination）”，并以极低算力成本将通用大模型微调为能源垂直领域模型。"
+        ],
+        inspirations: [
+          "<strong>“LLM + 优化求解器”自动化工作流（Text-to-Model）</strong>：研究利用 LLM Agent 自动读取非结构化政策文本或工程需求，生成 PyPSA 或 Gurobi 优化代码，并通过“报错反馈-自我修正（Self-Correction）”闭环确保模型可解。",
+          "<strong>三层混合建模流水线（Optimization + ML Surrogate + LLM）</strong>：底层用传统优化生成高保真数据，中层用机器学习代理模型实现毫秒级情景探索，顶层用 LLM 作为交互界面实时生成灵敏度分析报告。",
+          "<strong>多智能体电力市场博弈（LLM-based Multi-Agent Simulation）</strong>：在虚拟电厂（VPP）或 P2P 交易中，用具有不同风险偏好的 LLM 智能体替代固定规则 Agent，模拟更具真实人类社会行为特征的竞价博弈。"
+        ]
+      },
+      {
+        id: "issue-04",
+        issueLabel: "第 4 期 · 安全强化学习调度",
+        topicTag: "Safe DRL & AutoML 动态优化",
+        tagColor: "bg-rose-50 text-rose-700 border-rose-200",
+        titleEn: "Safe-AutoSAC: AutoML-enhanced safe deep reinforcement learning for integrated energy system scheduling with multi-channel informer forecasting and electric vehicle demand response",
+        titleZh: "Safe-AutoSAC：结合多通道 Informer 预测与电动汽车需求响应的 AutoML 增强型综合能源系统安全深度强化学习调度",
+        authors: "Yang Li, Bingsong Zhao, Yuanzheng Li, Chao Long, Sen Li, Zhaoyang Dong (董朝阳), Mohammad Shahidehpour",
+        journal: "Applied Energy (Vol. 399, 126468)",
+        date: "2025年年底",
+        doi: "10.1016/j.apenergy.2025.126468",
+        extraNote: "IEEE Fellow 董朝阳教授与 Mohammad Shahidehpour 院士等联合发表",
+        coreSummary: [
+          "<strong>严格的物理安全边界保障（Safe DRL 机制）</strong>：常规 DRL 存在“试错过程容易违背电网/热网物理安全约束”的致命伤。本文提出 <strong>Safe-AutoSAC</strong> 算法，在软演员-评论家（SAC）架构中嵌入安全约束机制与自适应延迟策略网络（ADPN），确保智能体严格遵守潮流约束及电/热储能（EESS/TESS）的 SOC 物理边界。",
+          "<strong>自动化机器学习（AutoML）赋能强化学习</strong>：克服传统 DRL 面对不同拓扑系统需反复手动调参的痛点，利用 AutoML 实现超参数自适应寻优，大幅提升复杂多能流环境下的训练稳定性与收敛速度。",
+          "<strong>“长序列时序预测 + 需求侧灵活性”闭环耦合</strong>：前端引入多通道 <strong>Informer</strong> 捕捉风光与负荷长周期依赖；后端交由 Safe-AutoSAC 动态制定分时电价并引导电动汽车与综合需求响应（IDR），系统净收益提升了 <strong>44.35%</strong>。"
+        ],
+        methods: [
+          "<strong>多通道 Informer 预测模型</strong>：基于 ProbSparse 自注意力机制将计算复杂度降至 O(L ln L)，为后续强化学习提供高精度状态空间（State Space）边界输入。",
+          "<strong>受约束马尔可夫决策过程（CMDP）建模</strong>：不仅定义最大化综合收益的奖励函数（Reward），还显式定义刻画潮流与设备越限的成本函数（Cost/Safety Constraint）。",
+          "<strong>AutoML 增强的自适应延迟策略网络（ADPN + AutoML）</strong>：平滑策略更新频率以抑制价值过估计偏差（Overestimation Bias），并自动搜索最优超参数配置。"
+        ],
+        inspirations: [
+          "<strong>从“普通 DRL”全面升级为“Safe DRL”</strong>：如今顶刊审稿最常质疑“如何保证实际电网绝对物理安全？”。务必用 CMDP 替代传统 MDP，结合拉格朗日乘子、控制障碍函数（CBF）或可微分<strong>物理安全投影层（Safety Projection Layer）</strong>证明物理可行性。",
+          "<strong>“前沿时序架构 + 强化学习”双阶段感知-决策范式</strong>：将 Informer、PatchTST 或 Mamba 作为前端不确定性感知器，与后端 Safe DRL 结合，显著提升论文工作量饱满度与方法论创新性。",
+          "<strong>利用 AutoML 回应“泛化性”质疑</strong>：引入 AutoML 或元学习，向审稿人证明模型换一个实际园区拓扑后依然能够自动适应，无需人工重新耗时调参。"
+        ]
+      },
+      {
+        id: "issue-05",
+        issueLabel: "第 5 期 · 空间拓扑与潮流计算",
+        topicTag: "物理信息图神经网络 (Physics-Informed GNN)",
+        tagColor: "bg-amber-50 text-amber-700 border-amber-200",
+        titleEn: "Optimal Power Flow With Physics-Informed Typed Graph Neural Networks",
+        titleZh: "基于物理信息类型化图神经网络的最优潮流求解",
+        authors: "Tania B. Lopez-Garcia, José Antonio Domínguez-Navarro",
+        journal: "IEEE Transactions on Power Systems (Vol. 40, Issue 1, pp. 381–393)",
+        date: "2025年1月",
+        doi: "10.1109/TPWRS.2024.3392662",
+        extraNote: "延伸关联：2025年《IEEE Trans. Ind. Appl.》同期发表《Physics-Informed Graph Neural Networks for Collaborative Dynamic Reconfiguration and Voltage Regulation》(DOI: 10.1109/TIA.2025.3529799)",
+        coreSummary: [
+          "<strong>异构/类型化图拓扑映射（Typed Graph Representation）</strong>：普通 MLP/CNN 破坏了能源网络的拓扑结构（一旦发生 N-1 断线就失效）。作者提出<strong>类型化图神经网络（Typed GNN）</strong>，将电网显式拆解为发电机节点（V_G）、负荷节点（V_D）及输电线路节点（V_E）三类异构实体，天然契合基尔霍夫定律局部守恒特性，在拓扑动态变化下具备极强泛化能力。",
+          "<strong>基于物理方程的无监督学习（Unsupervised Physics-Informed Training）</strong>：彻底摆脱“先用传统求解器跑几万次生成标签数据、再训练网络”的繁琐有监督流程，直接将 AC-OPF 的目标函数与潮流物理约束写入复合损失函数中，使网络训练直接等价于物理寻优。",
+          "<strong>计算效率与物理可行性双重突破</strong>：在线推理时间比经典内点法降低数个数量级，且有效消除了纯数据驱动模型常见的节点功率不平衡问题。"
+        ],
+        methods: [
+          "<strong>类型化图消息传递机制（Typed Message Passing）</strong>：为发电机、负荷和线路分别设计独立的神经网络更新函数，交替聚合相邻节点的电压幅值、相角与功率注入，精准保留支路阻抗等边缘特征（Edge Features）。",
+          "<strong>多维物理约束嵌入损失函数（L = L_a + L_b + L_c）</strong>：融合经济/网损目标项（L_a）、基于交流潮流方程的节点有功/无功功率残差均方误差等式约束项（L_b），以及基于 ReLU 型死区惩罚函数的电压与出力安全边界不等式项（L_c）。"
+        ],
+        inspirations: [
+          "<strong>用“异构图（Heterogeneous/Typed GNN）”建模多能互补网络</strong>：在电-气-热综合能源系统中，将不同能源介质与耦合设备（CHP、P2G）定义为不同类型的图节点和边，是处理跨部门网络级耦合最优雅的 AI 建模方式。",
+          "<strong>“无监督物理损失驱动”解决样本生成痛点</strong>：审稿人常批评“生成训练样本的时间比直接优化还长”。采用本文的无监督物理信息训练法，无需提前生成 Ground Truth 标签，靠最小化物理方程残差训练 GNN，完美回击该质疑。",
+          "<strong>攻克 N-1 安全校验与配电网动态重构难题</strong>：利用 GNN 局部消息传递特性，重点研究模型在未见过的拓扑结构（Unseen Topologies）下的泛化能力。"
+        ]
+      },
+      {
+        id: "issue-06",
+        issueLabel: "第 6 期 · 生成式AI与不确定性",
+        topicTag: "条件扩散模型 (Diffusion Models) & 场景生成",
+        tagColor: "bg-cyan-50 text-cyan-700 border-cyan-200",
+        titleEn: "A novel conditional diffusion model for joint source-load scenario generation considering both diversity and controllability",
+        titleZh: "兼顾多样性与可控性的源荷联合场景生成新型条件扩散模型",
+        authors: "Wei Zhao, Zhen Shao, Shanlin Yang, Xinhui Lu",
+        journal: "Applied Energy (Vol. 377, Part C, 124555)",
+        date: "2025年1月",
+        doi: "10.1016/j.apenergy.2024.124555",
+        extraNote: "延伸关联：美国国家可再生能源实验室 (NREL) 于《Applied Energy》Vol. 380 发表的综述《Deep generative models in energy system applications: Review, challenges, and future directions》(DOI: 10.1016/j.apenergy.2024.125059)",
+        coreSummary: [
+          "<strong>打破“模式崩溃”，刻画高维源-荷联合分布</strong>：早期生成模型（GANs、VAEs）易发生训练不稳定与模式崩溃（Mode Collapse）。本文构建源-荷联合条件扩散生成框架（CDSG），同时捕捉同一区域内风、光与多元负荷的动态非线性耦合（如极寒天气下“光伏骤降与采暖激增”并发特征），覆盖完整概率分布尾部。",
+          "<strong>从“盲目随机生成”到“细粒度可控生成（Controllability）”</strong>：在逆向去噪过程中引入多维条件引导机制（Conditional Guidance），允许建模者指定生成特定爬坡率、特定季节或特定极端气象强度的场景，服务于电网压力测试与韧性评估。",
+          "<strong>下游优化调度闭环验证</strong>：将扩散模型生成的源-荷场景集直接输入日前最优调度模型，实证表明其越限惩罚成本与弃风弃光率均显著低于传统方法。"
+        ],
+        methods: [
+          "<strong>前向扩散与逆向条件去噪（Conditional DDPM）</strong>：前向过程将历史源-荷矩阵逐步加噪至纯高斯噪声；逆向过程训练嵌入时间步编码与条件向量的深度去噪网络，逐步重构符合指定物理统计特征的曲线。",
+          "<strong>时空相关性特征提取模块</strong>：在去噪主干网络中融合通道注意力与时序卷积，确保生成的曲线既满足单序列时间自相关性（平滑度与爬坡率），又保持多序列空间互相关性。",
+          "<strong>场景削减与两阶段随机规划耦合</strong>：提炼典型场景集及概率权重，嵌入两阶段随机优化模型求解日前机组组合与日内功率平衡。"
+        ],
+        inspirations: [
+          "<strong>将“GAN”全面升级为“Diffusion / Flow Matching”</strong>：审稿人对基于 GAN 生成风光场景已产生审美疲劳。改用条件扩散模型或流匹配（Flow Matching），不仅数学收敛性更具优势，还能绘制极具表现力的“去噪演化过程可视化图”。",
+          "<strong>聚焦“极端低概率-高冲击事件（HILP）”的反事实合成</strong>：利用条件扩散模型进行<strong>反事实场景生成（Counterfactual Generation）</strong>，合成历史未曾发生但物理可能出现的极端气象-能源耦合场景，用于规划容灾校验。",
+          "<strong>任务导向型（Decision-Focused）场景生成</strong>：在生成模型损失函数中直接引入下游优化模型的决策目标，解决“统计误差最小 ≠ 调度决策最优”的脱节问题。"
+        ]
+      },
+      {
+        id: "issue-07",
+        issueLabel: "第 7 期 · 科学机器学习与暂态仿真",
+        topicTag: "神经算子 (DeepONet / FNO) & 微分方程求解",
+        tagColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
+        titleEn: "Real-Time Contingency Screening for Converter-Dominated Power Systems: A Graphical-DeepONet Approach",
+        titleZh: "变流器主导型电力系统的实时预想事故筛查：一种图深度算子网络方法",
+        authors: "Genghong Lu, Siqi Bu (浙江大学 & 香港理工大学联合团队)",
+        journal: "IEEE Transactions on Industrial Informatics",
+        date: "2026年 (2025年9月在线发表)",
+        doi: "IEEE Xplore / PolyU IRA (10397/119139)",
+        extraNote: "延伸必读：华盛顿大学 Baosen Zhang 团队发表于《IEEE Trans. Power Syst.》(2024, Vol. 39) 的 FNO 奠基作《A Frequency Domain Approach to Predict Power System Transients》(DOI: 10.1109/TPWRS.2023.3259960)",
+        coreSummary: [
+          "<strong>打破时域数值积分的“步长枷锁”（TDS-Independent Solution）</strong>：变流器主导型电力系统的动态由高维强非线性微分代数方程组（DAEs）主导，传统龙格-库塔法逐步积分耗时极长。本文开发的 <strong>Graphical-DeepONet</strong> 直接学习从“故障前稳态与扰动空间”到“故障后连续时间动态响应轨迹”的无穷维解算子（Solution Operator），推理阶段完全摆脱时域积分器。",
+          "<strong>应对电力电子变流器（Converter）快慢动态耦合</strong>：结合深度算子网络（DeepONet）与频域傅里叶神经算子（FNO）思想，在算子空间高效捕捉变流器电网的高频振荡与低频失步特征，支持任意时间网格点的零样本超分辨率连续轨迹秒级生成。",
+          "<strong>图结构赋能拓扑感知算子</strong>：将图深度学习嵌入分支网络，严格感知电网空间拓扑连接与故障发生位置，计算效率相比传统时域仿真提升数个数量级，完美支撑在线实时动态安全评估（DSA）。"
+        ],
+        methods: [
+          "<strong>分支-主干双网络算子架构（Branch-Trunk Architecture）</strong>：基于算子通用近似定理，<strong>图分支网络（Graphical Branch Net）</strong>编码故障前潮流状态、变流器参数及拓扑图；<strong>主干网络（Trunk Net）</strong>输入连续时间坐标 t，两者通过内积直接输出时刻 t 的动态轨迹解 G(u)(t)。",
+          "<strong>频域傅里叶神经算子变换（FNO 对比与融合）</strong>：利用快速傅里叶变换（FFT）将时域微分方程转换到频域进行线性核积分，无需知晓底层设备白盒参数即可精准还原非线性摆动方程动态响应。"
+        ],
+        inspirations: [
+          "<strong>从“传统 PINN”升级到“Neural Operator（神经算子）”</strong>：传统 PINN 只求解某一个特定初始/边界条件下的微分方程，边界一变就得重训；而 <strong>DeepONet 或 FNO 学习的是“一整族微分方程的解算子”</strong>——训练一次即可对任意新初始状态实现毫秒级推理，理论深度极受审稿人青睐。",
+          "<strong>综合能源系统“快慢动态异质耦合（PDE + DAE）”加速</strong>：热网和天然气管网具有显著管存效应与传输延迟（由双曲型偏微分方程 PDE 描述）。可利用 FNO/DeepONet 训练热网/气网 PDE 的算子代理模型，作为可微约束无缝嵌入上层电网优化调度中。"
+        ]
+      },
+      {
+        id: "issue-08",
+        issueLabel: "第 8 期 · 隐私保护与分布式协同",
+        topicTag: "联邦学习 (Federated Learning) & 边缘智能",
+        tagColor: "bg-teal-50 text-teal-700 border-teal-200",
+        titleEn: "EdgeHEM: Sparse Federated Reinforcement Learning for Home Energy Management at the Edge",
+        titleZh: "EdgeHEM：面向边缘端家庭能量管理的稀疏联邦强化学习",
+        authors: "Yehui Li, X. Chen, Yi Wang (香港大学王毅教授团队)",
+        journal: "IEEE Transactions on Smart Grid (Vol. 16, Issue 6, pp. 5602–5614)",
+        date: "2025年11月",
+        doi: "10.1109/TSG.2025.3598812",
+        extraNote: "开源代码：GitHub (hkuedl/Edge-Home-Energy-Management) | 延伸关联：美国 PNNL 国家实验室《IEEE TSG》2025 纵向联邦微网控制研究 (DOI: 10.1109/TSG.2024.3466768)",
+        coreSummary: [
+          "<strong>打破“数据孤岛”，实现数据不出本地的协同寻优</strong>：集中式 AI 要求上传所有用户高频电表、光伏与 EV 数据，面临严苛的数据隐私法规限制。本文利用<strong>联邦强化学习（FRL）</strong>，让各分布式节点在本地训练，仅向聚合服务器上传加密/压缩后的梯度参数，在不泄露隐私的前提下共享全局最优多能调度经验。",
+          "<strong>动态稀疏学习克服边缘硬件瓶颈（Dynamic Sparse Training）</strong>：实际工程中模型需部署在算力受限的智能电表或家庭网关。作者引入具有拓扑演化机制的动态稀疏训练策略，自适应剪枝并重构网络连接，大幅削减内存占用与计算量。",
+          "<strong>梯度近似压缩联邦通信</strong>：显著降低分布式能源节点与聚合商（Aggregator）之间高频交互的通信带宽开销，并在真实硬件测试床及 Pecan Street / NYISO 市场数据集上完成验证。"
+        ],
+        methods: [
+          "<strong>多约束马尔可夫决策建模（Multi-appliance HEM MDP）</strong>：精细建模不可中断负荷、热惯性温控负荷（空调热力学方程）、双向储能（EV/ESS）及实时电价（RTP），内嵌舒适度与出行焦虑惩罚。",
+          "<strong>基于权重-梯度引导的拓扑演化</strong>：在本地 Actor-Critic 训练中周期性执行“剪枝（Drop）- 生长（Grow）”循环，激活高梯度潜力的稀疏通路。",
+          "<strong>横向与纵向联邦协同拓展</strong>：横向联邦（Horizontal FL）适用于同质家庭/微网策略共享；纵向联邦（Vertical FL，如 PNNL 研究）适用于配电网运营商（DSO）与独立微网业主在不公开各自拓扑与商业机密的前提下协同实现极端故障韧性控制。"
+        ],
+        inspirations: [
+          "<strong>攻克分布式能源的“非独立同分布（Non-IID）”异质性难题</strong>：不同微网或用户的源-荷分布截然不同，直接用经典 FedAvg 会水土不服。可研究<strong>个性化联邦学习（Personalized FL）、分簇联邦学习</strong>或<strong>自适应特征解耦（拆分为全局共性特征与本地私有特征）</strong>。",
+          "<strong>结合“可信 AI / 零信任机制”抵御网络物理攻击</strong>：在联邦建模中引入差分隐私、同态加密或鲁棒聚合算子，防御恶意产消者上传虚假梯度的联邦投毒攻击（Poisoning Attacks）。",
+          "<strong>直接复用开源代码作为 Baseline</strong>：可直接下载港大王毅团队在 GitHub 开源的 EdgeHEM 代码与数据集，在此基础上扩展更复杂的综合能源设备模型。"
+        ]
+      },
+      {
+        id: "issue-09",
+        issueLabel: "第 9 期 · 冷启动与跨场景泛化",
+        topicTag: "迁移学习 (Transfer Learning) & 零/少样本建模",
+        tagColor: "bg-orange-50 text-orange-700 border-orange-200",
+        titleEn: "Transfer learning-based multi-energy load forecasting method for integrated energy system with zero-shot",
+        titleZh: "面向零样本综合能源系统的基于迁移学习的多能负荷预测与建模方法",
+        authors: "Ke Li, Zheng Qin, Yuchen Mu, Haiyang Wang, Qingfeng Bie, Xianxin Yin, Yi Yan",
+        journal: "Applied Energy (Vol. 401, Part C, 126769)",
+        date: "2025年年底 (含2026年4月最新扩展)",
+        doi: "10.1016/j.apenergy.2025.126769",
+        extraNote: "延伸关联：美国橡树岭国家实验室 (ORNL) 于 2026年4月发表在《Applied Energy》Vol. 413 的控制迁移研究《A transfer learning approach to energy-efficient control of small and medium-sized commercial buildings》(DOI: 10.1016/j.apenergy.2026.127745)",
+        coreSummary: [
+          "<strong>攻克“零历史数据”冷启动难题（Zero-Shot Cross-Domain Adaptation）</strong>：新建成的综合能源园区或微电网面临严重的“冷启动（Cold-Start）”与数据匮乏困境。作者摆脱传统迁移学习必须依赖目标域少量标签数据微调的限制，通过提取多个成熟源域园区的物理配置属性与多能耦合特征，构建基于元特征映射与域不变特征提取的零样本迁移机制，使新建园区投运第一天即可获得高精度电、热、冷多能流基线。",
+          "<strong>从“零样本启动”到“少样本动态演进”的全周期平滑过渡</strong>：随着新建园区积累数天或数周的少量实时数据（Few-shot），框架无缝切换至自适应微调模式，迅速修正源域与目标域之间的分布漂移（Domain Shift）。",
+          "<strong>从“预测迁移”拓展到“控制器策略迁移”（ORNL 2026 进展）</strong>：将源建筑预训练好的热力学动态模型与强化学习/MPC 控制器参数迁移至不同气候区、不同几何结构的新建筑中，仅需极少量交互数据即可收敛。"
+        ],
+        methods: [
+          "<strong>多源域特征对齐与对抗域适应（Multi-Source Domain Adaptation）</strong>：利用最大均值差异（MMD）或域对抗网络（DANN），在潜空间剥离局部噪声，提取电-热-冷负荷通用的时序周期性与气象敏感度共享特征。",
+          "<strong>物理先验与相似度加权机制（Physics-Guided Similarity Matching）</strong>：结合园区静态物理指标（供能面积、电热装机比）与气象分布 Wasserstein 距离，动态计算不同源域对目标新建园区的贡献权重，防止<strong>“负迁移（Negative Transfer）”</strong>。",
+          "<strong>冻结-解冻渐进式微调（Progressive Fine-Tuning）</strong>：过渡到少样本阶段时，冻结底层通用时空特征提取层，仅用少量目标域新样本更新顶层决策头，防止小样本过拟合。"
+        ],
+        inspirations: [
+          "<strong>切入“新建零碳园区投运初期（Day-1 to Month-1）自适应建模”场景</strong>：多数论文只研究成熟系统，针对数据从 0 到 1 动态增长过程中的“Zero-shot 冷启动 → Few-shot 在线演化”建模极具工程故事性。",
+          "<strong>引入“模型无关元学习（MAML）”实现极速跨场景适应</strong>：将不同气候区的微网优化调度视为不同任务（Tasks），训练元初始化参数（Meta-Initialization），遇到全新系统或罕见天气时仅需 3~5 步梯度下降即可瞬间适应。",
+          "<strong>结合物理机理锚点防止“负迁移”</strong>：将能量守恒方程或设备热力学效率曲线嵌入迁移网络特征转换层，用物理定律作为“锚点（Anchor）”约束跨域迁移方向。"
+        ]
+      }
+      // === 在此处上方粘贴新一期文献对象（注意上一个对象末尾加英文逗号） ===
+    ];
+
+    // 渲染函数：生成左侧导航与右侧卡片
+    function renderAll(filterText = "") {
+      const navList = document.getElementById("nav-list");
+      const container = document.getElementById("papers-container");
+      const totalBadge = document.getElementById("total-badge");
+      
+      const keyword = filterText.trim().toLowerCase();
+      const filtered = papersData.filter(item => {
+        if (!keyword) return true;
+        const fullText = [
+          item.issueLabel, item.topicTag, item.titleEn, item.titleZh,
+          item.authors, item.journal, ...item.coreSummary, ...item.methods, ...item.inspirations
+        ].join(" ").toLowerCase();
+        return fullText.includes(keyword);
+      });
+
+      totalBadge.textContent = `共 ${papersData.length} 篇`;
+
+      // 1. 渲染左侧导航栏
+      navList.innerHTML = filtered.map((item, idx) => `
+        <a href="#${item.id}" onclick="closeMobileSidebar()" id="nav-${item.id}"
+          class="nav-item block px-5 py-3.5 hover:bg-slate-50 transition group">
+          <div class="flex items-center justify-between text-xs text-slate-400 group-hover:text-brand-600">
+            <span class="font-mono font-medium">${item.issueLabel}</span>
+            <span>${item.date.split(' ')[0]}</span>
+          </div>
+          <div class="mt-1 text-sm font-medium text-slate-800 line-clamp-1 group-hover:text-brand-600">
+            ${item.topicTag}
+          </div>
+          <div class="mt-0.5 text-xs text-slate-500 line-clamp-1">
+            ${item.titleZh}
+          </div>
+        </a>
+      `).join("");
+
+      // 2. 渲染右侧文献详情卡片
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-12 text-center border border-slate-200">
+            <p class="text-slate-500 text-base">🔍 没有找到包含 "<strong>${filterText}</strong>" 的文献，请尝试其他关键词。</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map((item) => `
+        <article id="${item.id}" class="scroll-mt-20 bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden card-hover">
+          <!-- 卡片头部：期数与元信息 -->
+          <div class="p-6 sm:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-slate-50/50">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white tracking-wide">
+                  ${item.issueLabel}
+                </span>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold border ${item.tagColor}">
+                  ${item.topicTag}
+                </span>
+              </div>
+              <span class="text-xs font-mono text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                📅 ${item.date}
+              </span>
+            </div>
+
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+              ${item.titleEn}
+            </h2>
+            <h3 class="mt-1.5 text-base sm:text-lg font-medium text-brand-700">
+              ${item.titleZh}
+            </h3>
+
+            <!-- 作者、期刊、DOI 信息栏 -->
+            <div class="mt-4 pt-4 border-t border-slate-200/60 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-600">
+              <div class="flex items-start gap-1.5">
+                <span class="shrink-0 text-slate-400">👤 作者：</span>
+                <span class="font-medium text-slate-800">${item.authors}</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="shrink-0 text-slate-400">🏛️ 期刊：</span>
+                <span class="font-semibold text-slate-900 italic">${item.journal}</span>
+              </div>
+              <div class="flex items-start gap-1.5">
+                <span class="shrink-0 text-slate-400">🔗 DOI/检索：</span>
+                <a href="${item.doi.startsWith('10.') ? 'https://doi.org/' + item.doi : '#'}" target="_blank" 
+                   class="font-mono text-brand-600 hover:underline break-all">
+                  ${item.doi}
+                </a>
+              </div>
+            </div>
+
+            ${item.extraNote ? `
+              <div class="mt-3 px-3.5 py-2 rounded-lg bg-amber-50/70 border border-amber-200/70 text-xs text-amber-900 flex items-start gap-2">
+                <span class="shrink-0">📌</span>
+                <span>${item.extraNote}</span>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- 卡片主体：三大核心模块 -->
+          <div class="p-6 sm:p-8 space-y-6">
+            <!-- 1. 核心内容总结 -->
+            <section>
+              <h4 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2 mb-3">
+                <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">💡</span>
+                核心内容总结 (Core Summary)
+              </h4>
+              <ul class="space-y-2.5 text-sm text-slate-700 leading-relaxed pl-2">
+                ${item.coreSummary.map(point => `
+                  <li class="flex items-start gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></span>
+                    <span>${point}</span>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+
+            <!-- 2. 研究方法 -->
+            <section class="pt-4 border-t border-slate-100">
+              <h4 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2 mb-3">
+                <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-sm">🛠️</span>
+                研究方法与技术路线 (Methodology)
+              </h4>
+              <ul class="space-y-2.5 text-sm text-slate-700 leading-relaxed pl-2">
+                ${item.methods.map(point => `
+                  <li class="flex items-start gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 shrink-0"></span>
+                    <span>${point}</span>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+
+            <!-- 3. 对您研究的启发 -->
+            <section class="pt-4 border-t border-slate-100 bg-brand-50/40 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 p-6 sm:p-8">
+              <h4 class="text-sm font-bold uppercase tracking-wider text-brand-900 flex items-center gap-2 mb-3">
+                <span class="w-6 h-6 rounded-lg bg-brand-600 text-white flex items-center justify-center text-sm">🎯</span>
+                对您研究的启发与切入点 (Research Inspiration)
+              </h4>
+              <ul class="space-y-2.5 text-sm text-slate-800 leading-relaxed pl-2">
+                ${item.inspirations.map(point => `
+                  <li class="flex items-start gap-2.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-600 mt-2 shrink-0"></span>
+                    <span>${point}</span>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+          </div>
+        </article>
+      `).join("");
+
+      setupScrollSpy();
+    }
+
+    // 搜索过滤触发
+    function filterPapers() {
+      const val = document.getElementById("search-input").value;
+      renderAll(val);
+    }
+
+    // 滚动监听高亮对应左侧导航项
+    function setupScrollSpy() {
+      const articles = document.querySelectorAll("article[id]");
+      const navItems = document.querySelectorAll(".nav-item");
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            navItems.forEach(n => n.classList.remove("active"));
+            const activeNav = document.getElementById(`nav-${entry.target.id}`);
+            if (activeNav) activeNav.classList.add("active");
+          }
+        });
+      }, { rootMargin: "-20% 0px -65% 0px" });
+
+      articles.forEach(art => observer.observe(art));
+    }
+
+    // 移动端侧边栏开关
+    function toggleMobileSidebar() {
+      const sb = document.getElementById("sidebar");
+      const bd = document.getElementById("sidebar-backdrop");
+      sb.classList.toggle("-translate-x-full");
+      bd.classList.toggle("hidden");
+    }
+    function closeMobileSidebar() {
+      const sb = document.getElementById("sidebar");
+      const bd = document.getElementById("sidebar-backdrop");
+      if (window.innerWidth < 1024) {
+        sb.classList.add("-translate-x-full");
+        bd.classList.add("hidden");
+      }
+    }
+
+    // 帮助弹窗控制
+    function openModal() { document.getElementById("help-modal").classList.remove("hidden"); }
+    function closeModal() { document.getElementById("help-modal").classList.add("hidden"); }
+
+    // 页面初始化渲染
+    window.addEventListener("DOMContentLoaded", () => renderAll());
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
