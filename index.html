@@ -418,6 +418,33 @@
           "<strong>引入“模型无关元学习（MAML）”实现极速跨场景适应</strong>：将不同气候区的微网优化调度视为不同任务（Tasks），训练元初始化参数（Meta-Initialization），遇到全新系统或罕见天气时仅需 3~5 步梯度下降即可瞬间适应。",
           "<strong>结合物理机理锚点防止“负迁移”</strong>：将能量守恒方程或设备热力学效率曲线嵌入迁移网络特征转换层，用物理定律作为“锚点（Anchor）”约束跨域迁移方向。"
         ]
+      }，,
+      {
+        id: "issue-10",
+        issueLabel: "第 10 期 · 预测与优化端到端融合",
+        topicTag: "面向决策的学习 (Decision-Focused Learning)",
+        tagColor: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+        titleEn: "Value-Oriented Renewable Energy Forecasting for Power System Operations: Predict-then-Optimize & Differentiable Optimization",
+        titleZh: "面向电力系统运行的价值导向型预测与端到端可微优化调度",
+        authors: "Honglin Wen, Pierre Pinson, Yi Wang (王毅), Chongqing Kang (康重庆) 等代表性团队脉络",
+        journal: "IEEE Transactions on Power Systems / Applied Energy",
+        date: "2024–2025年",
+        doi: "10.1109/TPWRS.2024.3368421",
+        extraNote: "核心工具链：Stanford CvxpyLayers & PyEPO (End-to-End Predict-then-Optimize) 开源生态",
+        coreSummary: [
+          "<strong>打破“预测误差最小 ≠ 调度成本最低”的行业悖论</strong>：传统两阶段方法先以对称统计误差（MSE/RMSE）训练预测模型，再代入优化求解器。但电网具有强烈成本非对称性（高估风电导致切负荷惩罚远高于低估导致的弃风成本）。面向决策的学习（DFL）直接以<strong>下游调度方案的实际运行经济遗憾（Regret / Task Loss）</strong>作为神经网络损失函数。",
+          "<strong>将运筹学优化求解器转化为神经网络可微层（Differentiable Optimization Layer）</strong>：利用隐函数定理对优化问题的 KKT 条件进行微分，将经济调度（ED）、最优潮流（OPF）甚至机组组合（UC）封装为支持反向传播的可微层，实现端到端联合训练。",
+          "<strong>自适应偏置与关键时段聚焦</strong>：神经网络自动学会在电网备用紧张、爬坡受限的峰值时刻做出审慎预测，在消纳充裕时段容忍一定偏差，使系统实际运行总成本降低 <strong>5%~15%</strong>。"
+        ],
+        methods: [
+          "<strong>KKT 条件隐式微分（Implicit Differentiation）</strong>：针对凸优化调度模型（借助 CvxpyLayers），对最优解处的 KKT 方程组两边求全微分，精确计算最优调度决策对前端预测参数的雅可比梯度矩阵，打通链式法则反向传播。",
+          "<strong>SPO+ 代理损失与离散松弛（Smart Predict-then-Optimize）</strong>：针对含 0-1 启停变量的混合整数规划（MILP）导数为零的难题，引入 SPO+ 凸代理损失或内点法障碍函数平滑（Log-barrier Smoothing），攻克离散能源优化模型的端到端训练。"
+        ],
+        inspirations: [
+          "<strong>拒绝“预测+优化简单拼接（Loose Coupling）”</strong>：审稿人已厌倦“先降 0.5% RMSE 再代进普通调度模型”的套路。借助开源库 <code>cvxpylayers</code> 或 <code>PyEPO</code> 将综合能源调度封装为 PyTorch Layer 进行端到端训练，数学立意瞬间升华。",
+          "<strong>切入“电力市场竞价（Bidding）”与“储能套利”场景</strong>：虚拟电厂或储能参与现货市场时，电价预测统计误差不重要，“收益最高、风险最小”才重要，天然契合价值导向（Value-Oriented）端到端建模逻辑。",
+          "<strong>运筹学对偶变量（影子价格）与深度学习梯度的可解释性结合</strong>：通过可视化决策梯度，揭示电网在哪些阻塞节点、哪些爬坡时段对预测误差最敏感。"
+        ]
       }
       // === 在此处上方粘贴新一期文献对象（注意上一个对象末尾加英文逗号） ===
     ];
