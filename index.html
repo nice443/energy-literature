@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI + 能源系统建模 | 前沿文献每日追踪知识库</title>
-  <!-- 引入 Tailwind CSS 实现现代化美观界面 -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,7 +24,6 @@
     }
   </script>
   <style>
-    /* 自定义滚动条与细节美化 */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -47,7 +45,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
 
-  <!-- 顶部通栏 (移动端导航触发器) -->
+  <!-- 移动端顶部栏 -->
   <header class="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between">
     <div class="flex items-center space-x-2">
       <span class="text-xl">⚡</span>
@@ -60,15 +58,14 @@
 
   <div class="max-w-[1440px] mx-auto flex min-h-screen">
 
-    <!-- 左侧固定导航栏 (Sidebar) -->
+    <!-- 左侧固定导航栏 -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-80 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static lg:h-screen lg:sticky lg:top-0 transition-transform duration-300 ease-in-out">
-      <!-- 知识库标题区 -->
       <div class="p-6 border-b border-slate-100 bg-gradient-to-br from-slate-900 via-brand-900 to-slate-900 text-white">
         <div class="flex items-center justify-between">
           <span class="px-2.5 py-0.5 text-xs font-semibold bg-brand-500/30 border border-brand-400/40 rounded-full text-brand-100">
             2024 - 2026 顶刊追踪
           </span>
-          <span id="total-badge" class="text-xs text-slate-300 font-mono">共 9 篇</span>
+          <span id="total-badge" class="text-xs text-slate-300 font-mono">共 10 篇</span>
         </div>
         <h1 class="mt-3 text-xl font-bold tracking-tight flex items-center gap-2">
           <span>⚡</span> AI + 能源系统建模
@@ -78,10 +75,10 @@
         </p>
       </div>
 
-      <!-- 搜索框与快速筛选 -->
+      <!-- 搜索框 -->
       <div class="p-4 border-b border-slate-100 bg-slate-50/50 space-y-2.5">
         <div class="relative">
-          <input type="text" id="search-input" oninput="filterPapers()" placeholder="搜索关键词 (如: GNN, 强化学习, 代理)..." 
+          <input type="text" id="search-input" oninput="filterPapers()" placeholder="搜索关键词 (如: GNN, 强化学习, 可微)..." 
             class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
           <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -89,50 +86,41 @@
         </div>
         <div class="flex items-center justify-between text-xs text-slate-500 px-1">
           <span>点击下方条目快速跳转</span>
-          <button onclick="openModal()" class="text-brand-600 hover:text-brand-700 font-medium flex items-center gap-0.5">
-            <span>➕</span> 如何追加新期？
+          <button onclick="openImportModal()" class="text-brand-600 hover:text-brand-700 font-semibold flex items-center gap-0.5">
+            <span>➕</span> 网页内直接加新期
           </button>
         </div>
       </div>
 
-      <!-- 期数跳转列表 -->
-      <nav id="nav-list" class="flex-1 overflow-y-auto py-2 divide-y divide-slate-50">
-        <!-- 由 JS 动态渲染生成 -->
-      </nav>
+      <!-- 导航列表 -->
+      <nav id="nav-list" class="flex-1 overflow-y-auto py-2 divide-y divide-slate-50"></nav>
 
-      <!-- 底部统计与说明 -->
       <div class="p-3.5 border-t border-slate-100 bg-slate-50 text-center text-xs text-slate-400">
-        持续更新中 · 支持本地永久保存与扩展
+        持续更新中 · 防报错保护已开启
       </div>
     </aside>
 
-    <!-- 移动端遮罩层 -->
     <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/40 z-30 hidden lg:hidden"></div>
 
-    <!-- 右侧主内容区 (Main Content) -->
+    <!-- 右侧主内容区 -->
     <main class="flex-1 min-w-0 px-4 py-6 sm:px-8 lg:px-12 lg:py-10">
-      
-      <!-- 顶部概览横幅 -->
       <div class="mb-8 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">📚 研究方向全景导览</h2>
+          <h2 class="text-lg font-bold text-slate-900">📚 研究方向全景导览（已收录第 1 ~ 10 期）</h2>
           <p class="text-sm text-slate-600 mt-1">
-            目前已覆盖：<span class="font-medium text-slate-800">全景综述、机器学习代理模型、LLM自动化建模、安全深度强化学习、物理信息GNN、扩散模型场景生成、神经算子(DeepONet/FNO)、联邦边缘学习、零/少样本迁移学习</span>。
+            已覆盖：<span class="font-medium text-slate-800">全景综述、AI代理模型、LLM自动化建模、安全强化学习(Safe DRL)、物理信息GNN、扩散模型(Diffusion)、神经算子(DeepONet/FNO)、联邦边缘学习、零样本迁移学习、端到端面向决策学习(DFL)</span>。
           </p>
         </div>
         <div class="flex flex-wrap gap-2 shrink-0">
-          <button onclick="openModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
-            <span>✨</span> 以后每期如何往里加？
+          <button onclick="openImportModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <span>➕</span> 粘贴导入新一期
           </button>
         </div>
       </div>
 
       <!-- 文献卡片容器 -->
-      <div id="papers-container" class="space-y-10">
-        <!-- 由 JS 动态渲染生成 -->
-      </div>
+      <div id="papers-container" class="space-y-10"></div>
 
-      <!-- 底部返回顶部 -->
       <div class="mt-12 mb-6 text-center">
         <a href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-sm font-medium text-slate-600 hover:text-brand-600 hover:border-brand-300 shadow-sm transition">
           <span>⬆️</span> 回到顶部
@@ -141,39 +129,36 @@
     </main>
   </div>
 
-  <!-- 弹窗：如何添加后续每期文献 (含代码生成器) -->
-  <div id="help-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+  <!-- 弹窗：网页内直接粘贴导入新一期（免改代码防白屏） -->
+  <div id="import-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
     <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 sm:p-8">
       <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <span>🚀</span> 以后每期如何往这个 HTML 里追加？
+          <span>➕</span> 免改代码：直接粘贴导入新一期文献
         </h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        <button onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
-      <div class="mt-4 space-y-4 text-sm text-slate-600 leading-relaxed">
-        <p class="bg-brand-50 text-brand-900 p-3.5 rounded-xl border border-brand-100 font-medium">
-          💡 <strong>最省心的方法（推荐）：</strong><br>
-          以后每天我给您推送完新一期文献后，您只需要对我说一句：<br>
-          <span class="inline-block mt-1 px-2 py-0.5 bg-white rounded border border-brand-200 text-brand-700 font-mono text-xs">“把今天这篇生成一段 JSON 代码，我要加到 HTML 里”</span> 或 <span class="inline-block mt-1 px-2 py-0.5 bg-white rounded border border-brand-200 text-brand-700 font-mono text-xs">“直接给我更新后的完整 HTML”</span>，我就会立刻为您生成好！
-        </p>
-        <p><strong>手动追加步骤（只需 10 秒）：</strong></p>
-        <ol class="list-decimal list-inside space-y-2 text-slate-700">
-          <li>用记事本或 VS Code 打开本 <code>.html</code> 文件，拉到最底部的 <code>const papersData = [ ... ]</code> 数组区域。</li>
-          <li>在数组末尾按格式粘贴新的一期对象（您可以找到注释 <code>// === 在此处上方粘贴新一期文献 ===</code> 的位置）。</li>
-          <li>保存文件并刷新浏览器，<strong>左侧目录导航、期数统计、搜索索引和正文卡片会自动全部更新！</strong></li>
-        </ol>
+      <div class="mt-4 space-y-3 text-sm text-slate-600">
+        <p>把每日推送末尾提供的 JSON 代码块粘贴到下方框内（会自动为您去掉多余的前后逗号并检查格式，保存在当前浏览器中；您也可以点击“下载完整最新 HTML”去覆盖 GitHub 文件）：</p>
+        <textarea id="json-input" rows="8" placeholder='在此粘贴 { "id": "issue-11", ... } 代码片段' 
+          class="w-full p-3 font-mono text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+        <div id="import-msg" class="text-xs font-medium hidden"></div>
       </div>
-      <div class="mt-6 flex justify-end">
-        <button onclick="closeModal()" class="px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800">我知道了</button>
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <button onclick="downloadUpdatedHTML()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium rounded-xl transition flex items-center gap-1.5">
+          <span>💾</span> 导出包含所有期数的完整 index.html
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeImportModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-200">关闭</button>
+          <button onclick="importNewIssue()" class="px-5 py-2 bg-brand-600 text-white text-sm font-medium rounded-xl hover:bg-brand-700">立即添加到页面</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- 核心文献数据库：以后每期新增只需在下方 papersData 数组中追加一个对象即可 -->
-  <!-- ===================================================================== -->
-  <script>
-    const papersData = [
+  <!-- 核心文献数据库（已内置第 1 ~ 10 期） -->
+  <script id="data-script">
+    const defaultPapersData = [
       {
         id: "issue-01",
         issueLabel: "第 1 期 · 全景综述基石",
@@ -446,10 +431,27 @@
           "<strong>运筹学对偶变量（影子价格）与深度学习梯度的可解释性结合</strong>：通过可视化决策梯度，揭示电网在哪些阻塞节点、哪些爬坡时段对预测误差最敏感。"
         ]
       }
-      // === 在此处上方粘贴新一期文献对象（注意上一个对象末尾加英文逗号） ===
+      // === 在此处上方粘贴新一期文献对象 ===
     ];
 
-    // 渲染函数：生成左侧导航与右侧卡片
+    // 合并默认数据与浏览器本地缓存的新增数据
+    let papersData = [...defaultPapersData];
+    try {
+      const savedCustom = localStorage.getItem("custom_energy_papers_v1");
+      if (savedCustom) {
+        const parsed = JSON.parse(savedCustom);
+        if (Array.isArray(parsed)) {
+          parsed.forEach(item => {
+            if (!papersData.some(p => p.id === item.id)) {
+              papersData.push(item);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("本地缓存读取忽略:", e);
+    }
+
     function renderAll(filterText = "") {
       const navList = document.getElementById("nav-list");
       const container = document.getElementById("papers-container");
@@ -460,20 +462,19 @@
         if (!keyword) return true;
         const fullText = [
           item.issueLabel, item.topicTag, item.titleEn, item.titleZh,
-          item.authors, item.journal, ...item.coreSummary, ...item.methods, ...item.inspirations
+          item.authors, item.journal, ...(item.coreSummary || []), ...(item.methods || []), ...(item.inspirations || [])
         ].join(" ").toLowerCase();
         return fullText.includes(keyword);
       });
 
       totalBadge.textContent = `共 ${papersData.length} 篇`;
 
-      // 1. 渲染左侧导航栏
-      navList.innerHTML = filtered.map((item, idx) => `
+      navList.innerHTML = filtered.map((item) => `
         <a href="#${item.id}" onclick="closeMobileSidebar()" id="nav-${item.id}"
           class="nav-item block px-5 py-3.5 hover:bg-slate-50 transition group">
           <div class="flex items-center justify-between text-xs text-slate-400 group-hover:text-brand-600">
             <span class="font-mono font-medium">${item.issueLabel}</span>
-            <span>${item.date.split(' ')[0]}</span>
+            <span>${(item.date || '').split(' ')[0]}</span>
           </div>
           <div class="mt-1 text-sm font-medium text-slate-800 line-clamp-1 group-hover:text-brand-600">
             ${item.topicTag}
@@ -484,7 +485,6 @@
         </a>
       `).join("");
 
-      // 2. 渲染右侧文献详情卡片
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="bg-white rounded-2xl p-12 text-center border border-slate-200">
@@ -496,14 +496,13 @@
 
       container.innerHTML = filtered.map((item) => `
         <article id="${item.id}" class="scroll-mt-20 bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden card-hover">
-          <!-- 卡片头部：期数与元信息 -->
           <div class="p-6 sm:p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-slate-50/50">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white tracking-wide">
                   ${item.issueLabel}
                 </span>
-                <span class="px-3 py-1 rounded-full text-xs font-semibold border ${item.tagColor}">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold border ${item.tagColor || 'bg-indigo-50 text-indigo-700 border-indigo-200'}">
                   ${item.topicTag}
                 </span>
               </div>
@@ -519,7 +518,6 @@
               ${item.titleZh}
             </h3>
 
-            <!-- 作者、期刊、DOI 信息栏 -->
             <div class="mt-4 pt-4 border-t border-slate-200/60 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-600">
               <div class="flex items-start gap-1.5">
                 <span class="shrink-0 text-slate-400">👤 作者：</span>
@@ -531,7 +529,7 @@
               </div>
               <div class="flex items-start gap-1.5">
                 <span class="shrink-0 text-slate-400">🔗 DOI/检索：</span>
-                <a href="${item.doi.startsWith('10.') ? 'https://doi.org/' + item.doi : '#'}" target="_blank" 
+                <a href="${(item.doi || '').startsWith('10.') ? 'https://doi.org/' + item.doi : '#'}" target="_blank" 
                    class="font-mono text-brand-600 hover:underline break-all">
                   ${item.doi}
                 </a>
@@ -546,16 +544,14 @@
             ` : ''}
           </div>
 
-          <!-- 卡片主体：三大核心模块 -->
           <div class="p-6 sm:p-8 space-y-6">
-            <!-- 1. 核心内容总结 -->
             <section>
               <h4 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2 mb-3">
                 <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">💡</span>
                 核心内容总结 (Core Summary)
               </h4>
               <ul class="space-y-2.5 text-sm text-slate-700 leading-relaxed pl-2">
-                ${item.coreSummary.map(point => `
+                ${(item.coreSummary || []).map(point => `
                   <li class="flex items-start gap-2.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></span>
                     <span>${point}</span>
@@ -564,14 +560,13 @@
               </ul>
             </section>
 
-            <!-- 2. 研究方法 -->
             <section class="pt-4 border-t border-slate-100">
               <h4 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2 mb-3">
                 <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-sm">🛠️</span>
                 研究方法与技术路线 (Methodology)
               </h4>
               <ul class="space-y-2.5 text-sm text-slate-700 leading-relaxed pl-2">
-                ${item.methods.map(point => `
+                ${(item.methods || []).map(point => `
                   <li class="flex items-start gap-2.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 shrink-0"></span>
                     <span>${point}</span>
@@ -580,14 +575,13 @@
               </ul>
             </section>
 
-            <!-- 3. 对您研究的启发 -->
             <section class="pt-4 border-t border-slate-100 bg-brand-50/40 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 p-6 sm:p-8">
               <h4 class="text-sm font-bold uppercase tracking-wider text-brand-900 flex items-center gap-2 mb-3">
                 <span class="w-6 h-6 rounded-lg bg-brand-600 text-white flex items-center justify-center text-sm">🎯</span>
                 对您研究的启发与切入点 (Research Inspiration)
               </h4>
               <ul class="space-y-2.5 text-sm text-slate-800 leading-relaxed pl-2">
-                ${item.inspirations.map(point => `
+                ${(item.inspirations || []).map(point => `
                   <li class="flex items-start gap-2.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-brand-600 mt-2 shrink-0"></span>
                     <span>${point}</span>
@@ -602,17 +596,13 @@
       setupScrollSpy();
     }
 
-    // 搜索过滤触发
     function filterPapers() {
-      const val = document.getElementById("search-input").value;
-      renderAll(val);
+      renderAll(document.getElementById("search-input").value);
     }
 
-    // 滚动监听高亮对应左侧导航项
     function setupScrollSpy() {
       const articles = document.querySelectorAll("article[id]");
       const navItems = document.querySelectorAll(".nav-item");
-
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -622,1032 +612,80 @@
           }
         });
       }, { rootMargin: "-20% 0px -65% 0px" });
-
       articles.forEach(art => observer.observe(art));
     }
 
-    // 移动端侧边栏开关
     function toggleMobileSidebar() {
-      const sb = document.getElementById("sidebar");
-      const bd = document.getElementById("sidebar-backdrop");
-      sb.classList.toggle("-translate-x-full");
-      bd.classList.toggle("hidden");
+      document.getElementById("sidebar").classList.toggle("-translate-x-full");
+      document.getElementById("sidebar-backdrop").classList.toggle("hidden");
     }
     function closeMobileSidebar() {
-      const sb = document.getElementById("sidebar");
-      const bd = document.getElementById("sidebar-backdrop");
       if (window.innerWidth < 1024) {
-        sb.classList.add("-translate-x-full");
-        bd.classList.add("hidden");
+        document.getElementById("sidebar").classList.add("-translate-x-full");
+        document.getElementById("sidebar-backdrop").classList.add("hidden");
       }
     }
 
-    // 帮助弹窗控制
-    function openModal() { document.getElementById("help-modal").classList.remove("hidden"); }
-    function closeModal() { document.getElementById("help-modal").classList.add("hidden"); }
+    function openImportModal() {
+      document.getElementById("import-modal").classList.remove("hidden");
+      document.getElementById("import-msg").classList.add("hidden");
+    }
+    function closeImportModal() {
+      document.getElementById("import-modal").classList.add("hidden");
+    }
 
-    // 页面初始化渲染
+    // 智能解析并导入新一期（自动清理前后多余逗号）
+    function importNewIssue() {
+      const raw = document.getElementById("json-input").value.trim().replace(/^,+|,+$/g, "").trim();
+      const msgBox = document.getElementById("import-msg");
+      if (!raw) return;
+
+      try {
+        const obj = (new Function("return (" + raw + ")"))();
+        if (!obj || !obj.titleZh) throw new Error("缺少必要字段 titleZh");
+        if (!obj.id) obj.id = "issue-" + (papersData.length + 1);
+
+        const existIdx = papersData.findIndex(p => p.id === obj.id);
+        if (existIdx >= 0) {
+          papersData[existIdx] = obj;
+        } else {
+          papersData.push(obj);
+        }
+
+        const customList = JSON.parse(localStorage.getItem("custom_energy_papers_v1") || "[]");
+        const cIdx = customList.findIndex(p => p.id === obj.id);
+        if (cIdx >= 0) customList[cIdx] = obj; else customList.push(obj);
+        localStorage.setItem("custom_energy_papers_v1", JSON.stringify(customList));
+
+        renderAll();
+        msgBox.textContent = "✅ 添加成功！已自动跳转到最新一期。";
+        msgBox.className = "text-xs font-medium text-emerald-600 block";
+        document.getElementById("json-input").value = "";
+        setTimeout(() => {
+          closeImportModal();
+          location.hash = "#" + obj.id;
+        }, 700);
+      } catch (err) {
+        msgBox.textContent = "❌ 格式有误（不会影响原网页）：" + err.message;
+        msgBox.className = "text-xs font-medium text-rose-600 block";
+      }
+    }
+
+    // 一键导出包含所有新增期数的完整 HTML 文件
+    function downloadUpdatedHTML() {
+      let htmlContent = document.documentElement.outerHTML;
+      const dataStr = JSON.stringify(papersData, null, 6);
+      htmlContent = htmlContent.replace(/const defaultPapersData = \[[\s\S]*?\/\/ === 在此处上方粘贴新一期文献对象 ===\s*\];/, `const defaultPapersData = ${dataStr.replace(/\]$/, '  // === 在此处上方粘贴新一期文献对象 ===\n    ];')}`);
+      const blob = new Blob(["<!DOCTYPE html>\n" + htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "index.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     window.addEventListener("DOMContentLoaded", () => renderAll());
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
